@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Rent Your Perfect Ride</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fas fa-car"></i> RENT YOUR PERFECT RIDE</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vehicles.html">Vehicles</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-outline active">Login</a>
+      <a href="register.html" class="btn btn-primary">Sign Up</a>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="form-card" style="max-width: 450px; margin: 0 auto;">
+      <h2 style="text-align: center; margin-bottom: 0.5rem;">Welcome Back</h2>
+      <p style="text-align: center; color: var(--gray); margin-bottom: 2rem;">Sign in to your account</p>
+      
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="email" placeholder="your@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+            <input type="checkbox"> Remember me
+          </label>
+          <a href="forgot-password.html" style="color: var(--primary); font-weight: 500;">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+
+        <p style="text-align: center; margin-top: 1.5rem;">
+          Don't have an account? <a href="register.html" style="color: var(--primary); font-weight: 600;">Sign up here</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Rent Your Perfect Ride. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const savedData = localStorage.getItem('userData');
+      
+      if (!savedData) {
+        alert('❌ No account found. Please sign up first.');
+        return;
+      }
+      
+      const userData = JSON.parse(savedData);
+      
+      if (userData.email === email && userData.password === password) {
+        localStorage.setItem('userName', userData.fullname);
+        alert(`✅ Welcome back, ${userData.fullname}!`);
+        window.location.href = 'dashboard.html';
+      } else {
+        alert('❌ Incorrect email or password.\n\n👉 If you forgot your password, click "Forgot password?" below.');
+      }
+    });
+  </script>
+</body>
+</html>

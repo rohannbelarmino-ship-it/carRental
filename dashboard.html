@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Rent Your Perfect Ride</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --secondary: #0f172a;
+      --gray: #64748b;
+      --light: #f8fafc;
+      --card-bg: #ffffff;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body { background: #f1f5f9; color: #1e293b; line-height: 1.6; }
+
+    /* Navbar */
+    .navbar {
+      background: var(--secondary);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-brand i { color: var(--primary); }
+    .nav-links { display: flex; list-style: none; gap: 2rem; }
+    .nav-links a {
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: white; }
+    .nav-actions { display: flex; gap: 1rem; align-items: center; }
+    .btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+    }
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-outline:hover { border-color: white; background: rgba(255,255,255,0.1); }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+
+    /* Section */
+    .section { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .sidebar h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      border-radius: 8px;
+      color: #475569;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .sidebar-link:hover {
+      background: #eff6ff;
+      color: var(--primary);
+    }
+    .sidebar-link.active {
+      background: var(--primary);
+      color: white;
+    }
+    .sidebar-link:last-child { margin-top: 1rem; }
+
+    /* Main Content */
+    .dashboard-content {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: var(--shadow);
+    }
+    .dashboard-content h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .dashboard-content > p { margin-bottom: 2rem; }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #f8fafc, #eff6ff);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+    }
+    .stat-card p:last-child { color: var(--gray); font-weight: 500; }
+
+    /* Bookings List */
+    .booking-item {
+      padding: 1.25rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .booking-item:hover { border-color: var(--primary); }
+    .booking-info h4 { margin-bottom: 0.25rem; }
+    .booking-info p { font-size: 0.9rem; color: var(--gray); }
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .badge-paid { background: #d1fae5; color: #065f46; }
+
+    /* Contact Info */
+    .contact-box {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: #f0f9ff;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--primary);
+    }
+    .contact-box h4 { margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .contact-box p { margin: 0.4rem 0; color: #374151; }
+    .contact-box strong { color: var(--primary); }
+
+    footer {
+      background: var(--secondary);
+      color: #94a3b8;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .sidebar { flex-direction: row; overflow-x: auto; gap: 0.5rem; }
+      .sidebar h3 { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fas fa-car"></i> RENT YOUR PERFECT RIDE</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vehicles.html">Vehicles</a></li>
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span id="user-greeting" style="font-weight: 600; color: #93c5fd;"></span>
+      <a href="#" id="logout-btn" class="btn btn-outline" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="dashboard-grid">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h3>My Account</h3>
+        <a href="dashboard.html" class="sidebar-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+        <a href="vehicles.html" class="sidebar-link"><i class="fas fa-car"></i> Book a Vehicle</a>
+        <a href="payment.html" class="sidebar-link"><i class="fas fa-credit-card"></i> Payments</a>
+        <a href="transactions.html" class="sidebar-link"><i class="fas fa-history"></i> Transactions</a>
+        <a href="#" id="sidebar-logout" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+
+      <!-- Main Content -->
+      <div class="dashboard-content">
+        <h2>Welcome, <span id="user-name">Guest</span>! 👋</h2>
+        <p>Here's your rental overview</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <p class="stat-value" id="stat-bookings">0</p>
+            <p>Total Bookings</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-value" id="stat-active">0</p>
+            <p>Active Bookings</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-value" id="stat-spent">₱0</p>
+            <p>Total Spent</p>
+          </div>
+        </div>
+
+        <h3 style="margin: 2rem 0 1rem;">Recent Bookings</h3>
+        <div id="bookings-list">
+          <p style="color: var(--gray);">No bookings yet. <a href="vehicles.html" style="color: var(--primary); font-weight: 600;">Browse vehicles</a> to make your first reservation!</p>
+        </div>
+
+        <!-- Customer Service Contact -->
+        <div class="contact-box">
+          <h4><i class="fas fa-headset" style="color: var(--primary);"></i> Customer Service</h4>
+          <p><strong>Phone / WhatsApp:</strong> 0920-600-7621</p>
+          <p><strong>Email:</strong> carrental@ph.com</p>
+          <p style="font-size: 0.9rem; margin-top: 0.5rem;">Available: Mon–Sat, 8:00 AM – 6:00 PM</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Rent Your Perfect Ride. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    const userName = localStorage.getItem('userName');
+    
+    if (!userName) {
+      alert('⚠️ Please login to access the dashboard.');
+      window.location.href = 'login.html';
+    } else {
+      document.getElementById('user-name').textContent = userName;
+      document.getElementById('user-greeting').textContent = `Hello, ${userName}`;
+      document.getElementById('logout-btn').style.display = 'inline-flex';
+    }
+
+    // Logout handlers
+    function logout() {
+      localStorage.removeItem('userName');
+      window.location.href = 'index.html';
+    }
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('sidebar-logout').addEventListener('click', logout);
+
+    // Load transactions from localStorage and display
+    function loadDashboardData() {
+      const records = JSON.parse(localStorage.getItem('transactionRecords') || '[]');
+      const listEl = document.getElementById('bookings-list');
+      
+      if (records.length > 0) {
+        document.getElementById('stat-bookings').textContent = records.length;
+        
+        const activeCount = records.filter(r => r.status === 'Pending' || r.status === 'Upcoming').length;
+        document.getElementById('stat-active').textContent = activeCount;
+        
+        const totalSpent = records.reduce((sum, r) => sum + Number(r.totalAmount || 0), 0);
+        document.getElementById('stat-spent').textContent = '₱' + totalSpent.toLocaleString('en-PH', { minimumFractionDigits: 2 });
+        
+        listEl.innerHTML = records.map(tx => {
+          const isPending = tx.status === 'Pending' || tx.status === 'Upcoming';
+          return `
+            <div class="booking-item">
+              <div class="booking-info">
+                <h4>${tx.vehicle} — ${tx.transactionId}</h4>
+                <p>Pick-up: ${tx.pickupDate || '—'} | Total: ₱${Number(tx.totalAmount).toLocaleString('en-PH', {minimumFractionDigits:2})}</p>
+              </div>
+              <div>
+                <span class="badge ${isPending ? 'badge-pending' : 'badge-paid'}">${tx.status}</span>
+                ${isPending ? `<a href="payment.html?ref=${encodeURIComponent(tx.transactionId)}&vehicle=${encodeURIComponent(tx.vehicle)}&amount=${tx.totalAmount}" class="btn btn-primary" style="margin-left:0.5rem; padding:0.4rem 1rem; font-size:0.9rem;">Pay Now</a>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    loadDashboardData();
+  </script>
+</body>
+</html>

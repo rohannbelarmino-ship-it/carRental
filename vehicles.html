@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Vehicles - Rent Your Perfect Ride</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --dark: #1f2937;
+      --gray-50: #f9fafb;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--gray-700); background: var(--gray-50); }
+
+    /* Navigation */
+    .navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      background: white; box-shadow: var(--shadow-sm); padding: 1rem 2rem; flex-wrap: wrap; gap: 1rem;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-brand { font-size: 1.3rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links { display: flex; list-style: none; gap: 2rem; flex-wrap: wrap; margin: 0.5rem 0; }
+    .nav-links a {
+      color: var(--gray-600); text-decoration: none; font-weight: 500; padding: 0.5rem 0;
+      border-bottom: 2px solid transparent; transition: all 0.2s ease;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem;
+      border-radius: 8px; font-weight: 600; text-decoration: none; text-align: center; border: none; cursor: pointer;
+      transition: all 0.2s ease; font-size: 0.95rem;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .btn-outline { border: 2px solid var(--gray-300); color: var(--gray-700); background: transparent; }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-full { width: 100%; }
+
+    /* Main Section */
+    .section { padding: 3rem 1.5rem; max-width: 1280px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 3rem; }
+    .section-title { font-size: 2rem; color: var(--gray-900); margin-bottom: 0.5rem; }
+    .section-subtitle { color: var(--gray-600); font-size: 1.05rem; }
+
+    /* Vehicles Grid */
+    .vehicles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+    .vehicle-card {
+      background: white; border-radius: var(--radius); overflow: hidden;
+      box-shadow: var(--shadow-md); transition: all 0.3s ease;
+      display: flex; flex-direction: column; height: 100%;
+    }
+    .vehicle-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .vehicle-image {
+      width: 100%; height: 220px; object-fit: cover; background: var(--gray-200);
+      transition: transform 0.3s ease;
+    }
+    .vehicle-card:hover .vehicle-image { transform: scale(1.03); }
+    .vehicle-img-container { overflow: hidden; }
+    .vehicle-info { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+    .vehicle-name { font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.75rem; }
+    .vehicle-features {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .feature-tag {
+      font-size: 0.8rem; padding: 0.25rem 0.75rem; background: var(--gray-50);
+      border-radius: 20px; color: var(--gray-600);
+    }
+    .vehicle-desc { color: var(--gray-600); margin-bottom: 1rem; font-size: 0.95rem; }
+    .vehicle-price {
+      font-size: 1.5rem; font-weight: 700; color: var(--success); margin-bottom: 1.25rem;
+      display: flex; align-items: baseline; gap: 0.25rem; margin-top: auto;
+    }
+    .price-unit { font-size: 0.9rem; color: var(--gray-600); font-weight: 400; }
+
+    /* Footer */
+    footer {
+      text-align: center; padding: 2rem; background: var(--dark); color: #9ca3af; margin-top: 3rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar { padding: 1rem; }
+      .nav-links { gap: 1rem; }
+      .section { padding: 2rem 1rem; }
+      .section-title { font-size: 1.6rem; }
+      .vehicles-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fas fa-car"></i> RENT YOUR PERFECT RIDE</div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="vehicles.html" class="active">Vehicles</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="login.html" class="btn btn-outline">Login</a>
+      <a href="register.html" class="btn btn-primary">Sign Up</a>
+    </div>
+  </nav>
+
+  <section class="section">
+    <div class="section-header">
+      <h2 class="section-title">Available Vehicles & Rates</h2>
+      <p class="section-subtitle">Choose the perfect ride for your trip — reliable, comfortable, and affordable</p>
+    </div>
+
+    <div class="vehicles-grid">
+      
+      <!-- Toyota Vios -->
+      <div class="vehicle-card">
+        <div class="vehicle-img-container">
+          <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=500&h=320&fit=crop" 
+               alt="Toyota Vios" class="vehicle-image" loading="lazy">
+        </div>
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">Toyota Vios</h3>
+          <div class="vehicle-features">
+            <span class="feature-tag"><i class="fas fa-user"></i> 5 Seats</span>
+            <span class="feature-tag"><i class="fas fa-cog"></i> Automatic</span>
+            <span class="feature-tag"><i class="fas fa-snowflake"></i> Fully A/C</span>
+          </div>
+          <p class="vehicle-desc">Compact sedan — perfect for city drives and small groups</p>
+          <p class="vehicle-price">₱1,500 <span class="price-unit">/ day</span></p>
+          <a href="booking.html?car=vios" class="btn btn-primary btn-full">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Mitsubishi Mirage -->
+      <div class="vehicle-card">
+        <div class="vehicle-img-container">
+          <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=500&h=320&fit=crop" 
+               alt="Mitsubishi Mirage" class="vehicle-image" loading="lazy">
+        </div>
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">Mitsubishi Mirage</h3>
+          <div class="vehicle-features">
+            <span class="feature-tag"><i class="fas fa-user"></i> 5 Seats</span>
+            <span class="feature-tag"><i class="fas fa-cog"></i> Manual</span>
+            <span class="feature-tag"><i class="fas fa-gas-pump"></i> Fuel Efficient</span>
+          </div>
+          <p class="vehicle-desc">Hatchback — budget-friendly and easy to maneuver</p>
+          <p class="vehicle-price">₱1,400 <span class="price-unit">/ day</span></p>
+          <a href="booking.html?car=mirage" class="btn btn-primary btn-full">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Toyota Hiace -->
+      <div class="vehicle-card">
+        <div class="vehicle-img-container">
+          <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=500&h=320&fit=crop" 
+               alt="Toyota Hiace" class="vehicle-image" loading="lazy">
+        </div>
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">Toyota Hiace</h3>
+          <div class="vehicle-features">
+            <span class="feature-tag"><i class="fas fa-users"></i> 15 Seats</span>
+            <span class="feature-tag"><i class="fas fa-cog"></i> Manual</span>
+            <span class="feature-tag"><i class="fas fa-map-marker-alt"></i> Group Trips</span>
+          </div>
+          <p class="vehicle-desc">Commuter van — spacious and comfortable for large groups</p>
+          <p class="vehicle-price">₱3,500 <span class="price-unit">/ day</span></p>
+          <a href="booking.html?car=hiace" class="btn btn-primary btn-full">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Toyota Fortuner -->
+      <div class="vehicle-card">
+        <div class="vehicle-img-container">
+          <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=500&h=320&fit=crop" 
+               alt="Toyota Fortuner" class="vehicle-image" loading="lazy">
+        </div>
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">Toyota Fortuner</h3>
+          <div class="vehicle-features">
+            <span class="feature-tag"><i class="fas fa-users"></i> 7 Seats</span>
+            <span class="feature-tag"><i class="fas fa-cog"></i> Automatic</span>
+            <span class="feature-tag"><i class="fas fa-star"></i> Premium</span>
+          </div>
+          <p class="vehicle-desc">Premium SUV — powerful, spacious, and perfect for family adventures</p>
+          <p class="vehicle-price">₱4,500 <span class="price-unit">/ day</span></p>
+          <a href="booking.html?car=fortuner" class="btn btn-primary btn-full">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Mitsubishi Xpander -->
+      <div class="vehicle-card">
+        <div class="vehicle-img-container">
+          <img src="https://images.unsplash.com/photo-1544620347-c4c4da6a3398?w=500&h=320&fit=crop" 
+               alt="Mitsubishi Xpander" class="vehicle-image" loading="lazy">
+        </div>
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">Mitsubishi Xpander</h3>
+          <div class="vehicle-features">
+            <span class="feature-tag"><i class="fas fa-users"></i> 7 Seats</span>
+            <span class="feature-tag"><i class="fas fa-cog"></i> Automatic</span>
+            <span class="feature-tag"><i class="fas fa-home"></i> Family Friendly</span>
+          </div>
+          <p class="vehicle-desc">MPV — stylish, practical, and great for family trips</p>
+          <p class="vehicle-price">₱2,800 <span class="price-unit">/ day</span></p>
+          <a href="booking.html?car=xpander" class="btn btn-primary btn-full">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+
+      <!-- Multicab Pick-up -->
+      <div class="vehicle-card">
+        <div class="vehicle-img-container">
+          <img src="https://images.unsplash.com/photo-1609630875178-3180f9357b56?w=500&h=320&fit=crop" 
+               alt="Multicab Pick-up" class="vehicle-image" loading="lazy">
+        </div>
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">Multicab Pick-up</h3>
+          <div class="vehicle-features">
+            <span class="feature-tag"><i class="fas fa-user"></i> 3 Seats</span>
+            <span class="feature-tag"><i class="fas fa-cog"></i> Manual</span>
+            <span class="feature-tag"><i class="fas fa-box"></i> Large Cargo</span>
+          </div>
+          <p class="vehicle-desc">Utility vehicle — dependable with plenty of cargo space</p>
+          <p class="vehicle-price">₱2,000 <span class="price-unit">/ day</span></p>
+          <a href="booking.html?car=pickup" class="btn btn-primary btn-full">
+            <i class="fas fa-calendar-check"></i> Book Now
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Rent Your Perfect Ride. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>

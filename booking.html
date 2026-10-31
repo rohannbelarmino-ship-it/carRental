@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Calculator - Rent Your Perfect Ride</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+  <style>
+    /* Extra styling for clarity */
+    .calculator-container { max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
+    .calc-card {
+      background: #fff; border-radius: 12px; padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-top: 4px solid #2563eb;
+    }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .result-box {
+      background: #f0fdf4; border-left: 4px solid #16a34a;
+      padding: 1.5rem; margin-top: 1.5rem; border-radius: 0 8px 8px 0;
+    }
+    .total-final { font-size: 1.8rem; font-weight: bold; color: #166534; }
+    input, select {
+      width: 100%; padding: 0.8rem; border: 1px solid #d1d5db;
+      border-radius: 8px; font-size: 1rem;
+    }
+    label { font-weight: 600; margin-bottom: 0.5rem; display: block; }
+    .btn-calculate {
+      background: #2563eb; color: white; border: none; padding: 0.9rem;
+      border-radius: 8px; font-size: 1rem; font-weight: bold;
+      width: 100%; cursor: pointer; margin-top: 1rem;
+    }
+    .btn-calculate:hover { background: #1d4ed8; }
+    .note { font-size: 0.85rem; color: #6b7280; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand"><i class="fas fa-car"></i> RENT YOUR PERFECT RIDE</div>
+  </nav>
+
+  <div class="calculator-container">
+    <h2 style="text-align: center; color: #1f2937;"><i class="fas fa-calculator"></i> Payment Calculator</h2>
+    <p style="text-align: center; color: #6b7280;">Calculate your rental cost based on days booked</p>
+
+    <div class="calc-card">
+      <!-- Vehicle Selection -->
+      <div class="form-group">
+        <label for="vehicle-select"><i class="fas fa-car"></i> Select Vehicle</label>
+        <select id="vehicle-select" onchange="updateRate()">
+          <option value="" disabled selected>-- Choose a vehicle --</option>
+          <option value="1500">Toyota Vios — ₱1,500/day</option>
+          <option value="1800">Mitsubishi Mirage — ₱1,800/day</option>
+          <option value="2200">Multicab Pick-up — ₱2,200/day</option>
+          <option value="3500">Toyota Hiace — ₱3,500/day</option>
+          <option value="5700">Toyota Fortuner — ₱5,700/day</option>
+          <option value="6200">Ford Everest — ₱6,200/day</option>
+        </select>
+      </div>
+
+      <!-- Date Selection -->
+      <div class="input-row">
+        <div>
+          <label for="pickup-date"><i class="fas fa-calendar-check"></i> Pick-up Date & Time</label>
+          <input type="datetime-local" id="pickup-date">
+        </div>
+        <div>
+          <label for="return-date"><i class="fas fa-calendar-times"></i> Return Date & Time</label>
+          <input type="datetime-local" id="return-date">
+        </div>
+      </div>
+
+      <!-- Manual Days Option -->
+      <div class="form-group" style="margin-top: 1rem;">
+        <label for="days-manual"><i class="fas fa-hashtag"></i> Or Enter Number of Days Directly</label>
+        <input type="number" id="days-manual" min="1" placeholder="e.g. 3" oninput="if(this.value) clearDates();">
+        <p class="note">Leave dates empty if using this field</p>
+      </div>
+
+      <button class="btn-calculate" onclick="calculateTotal()">
+        <i class="fas fa-calculator"></i> Calculate Payment
+      </button>
+
+      <!-- Result Display -->
+      <div class="result-box" id="result-section" style="display: none;">
+        <h3 style="margin-top: 0; color: #166534;"><i class="fas fa-file-invoice"></i> Price Breakdown</h3>
+        
+        <p style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+          <span>Vehicle:</span>
+          <span id="res-vehicle">—</span>
+        </p>
+        <p style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+          <span>Daily Rate:</span>
+          <span id="res-rate">—</span>
+        </p>
+        <p style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+          <span>Duration:</span>
+          <span id="res-days">—</span>
+        </p>
+        <hr style="border: none; border-top: 1px dashed #ccc; margin: 0.8rem 0;">
+        <p class="total-final" style="display: flex; justify-content: space-between; margin: 0;">
+          <span>TOTAL AMOUNT:</span>
+          <span id="res-total">—</span>
+        </p>
+      </div>
+
+      <!-- Save to Booking Button -->
+      <button class="btn-calculate" style="background: #16a34a; margin-top: 1.5rem; display: none;" id="save-btn" onclick="saveCalculation()">
+        <i class="fas fa-save"></i> Save & Use This Calculation
+      </button>
+    </div>
+
+    <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #6b7280;">
+      <i class="fas fa-info-circle"></i> Partial days are rounded UP to full days (e.g., 2.1 days = 3 days charged)
+    </p>
+  </div>
+
+  <script>
+    // Vehicle names matching rates
+    const vehicleNames = {
+      "1500": "Toyota Vios",
+      "1800": "Mitsubishi Mirage",
+      "2200": "Multicab Pick-up",
+      "3500": "Toyota Hiace",
+      "5700": "Toyota Fortuner",
+      "6200": "Ford Everest"
+    };
+
+    let selectedRate = 0;
+    let selectedVehicleName = "";
+    let calculatedDays = 0;
+    let calculatedTotal = 0;
+
+    // Format currency in Philippine Peso
+    function formatPeso(amount) {
+      return '₱' + Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
+    }
+
+    // Update rate when vehicle selected
+    function updateRate() {
+      selectedRate = parseInt(document.getElementById('vehicle-select').value);
+      selectedVehicleName = vehicleNames[selectedRate] || "Selected Vehicle";
+    }
+
+    // Clear date fields when manual days entered
+    function clearDates() {
+      document.getElementById('pickup-date').value = '';
+      document.getElementById('return-date').value = '';
+    }
+
+    // Main calculation function
+    function calculateTotal() {
+      const vehicleSelect = document.getElementById('vehicle-select');
+      const pickupVal = document.getElementById('pickup-date').value;
+      const returnVal = document.getElementById('return-date').value;
+      const manualDays = parseInt(document.getElementById('days-manual').value);
+
+      // Validate vehicle selected
+      if (!selectedRate) {
+        alert('⚠️ Please select a vehicle first!');
+        return;
+      }
+
+      // Determine days from dates OR manual input
+      let days = 0;
+      let methodUsed = "";
+
+      if (pickupVal && returnVal) {
+        // Calculate from date/time
+        const pickup = new Date(pickupVal);
+        const returnDate = new Date(returnVal);
+
+        if (returnDate <= pickup) {
+          alert('⚠️ Return date must be after pick-up date!');
+          return;
+        }
+
+        const msPerDay = 24 * 60 * 60 * 1000;
+        const exactDays = (returnDate - pickup) / msPerDay;
+        days = Math.ceil(exactDays); // Round UP — partial = full day
+        methodUsed = `${exactDays.toFixed(2)} days booked → charged as ${days} full day${days>1?'s':''}`;
+      } else if (!isNaN(manualDays) && manualDays > 0) {
+        // Manual entry
+        days = manualDays;
+        methodUsed = `${days} full day${days>1?'s':''} (entered manually)`;
+      } else {
+        alert('⚠️ Please enter pick-up & return dates OR the number of days!');
+        return;
+      }
+
+      // Calculate total
+      const total = days * selectedRate;
+      calculatedDays = days;
+      calculatedTotal = total;
+
+      // Display results
+      document.getElementById('res-vehicle').textContent = selectedVehicleName;
+      document.getElementById('res-rate').textContent = formatPeso(selectedRate);
+      document.getElementById('res-days').textContent = methodUsed;
+      document.getElementById('res-total').textContent = formatPeso(total);
+
+      // Show result section & save button
+      document.getElementById('result-section').style.display = 'block';
+      document.getElementById('save-btn').style.display = 'block';
+    }
+
+    // Save calculation to sessionStorage (share with payment page)
+    function saveCalculation() {
+      sessionStorage.setItem('bookingCar', selectedVehicleName);
+      sessionStorage.setItem('dailyRate', selectedRate);
+      sessionStorage.setItem('bookingDays', calculatedDays);
+      sessionStorage.setItem('bookingTotal', calculatedTotal);
+
+      alert(`✅ Calculation Saved!\n\nVehicle: ${selectedVehicleName}\nDays: ${calculatedDays}\nTotal: ${formatPeso(calculatedTotal)}\n\nThis will be shown on your payment page.`);
+      
+      // Optional: Redirect to payment page
+      // window.location.href = 'payment.html';
+    }
+
+    // Set minimum date to today on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('pickup-date').min = now.toISOString().slice(0, 16);
+      document.getElementById('return-date').min = now.toISOString().slice(0, 16);
+    });
+  </script>
+</body>
+</html>

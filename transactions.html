@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings - Rent Your Perfect Ride</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+  <style>
+    .dashboard-container { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 250px; background: white; border-right: 1px solid var(--gray-200);
+      padding: 2rem 1rem; position: fixed; height: 100vh; overflow-y: auto;
+    }
+    .sidebar-logo {
+      font-size: 1.3rem; font-weight: bold; color: var(--primary); margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .sidebar-menu { list-style: none; }
+    .sidebar-menu li { margin-bottom: 0.5rem; }
+    .sidebar-menu a {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.8rem 1rem;
+      border-radius: 8px; color: var(--gray-700); font-weight: 500; transition: all 0.2s;
+    }
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+      background: var(--gray-100); color: var(--primary);
+    }
+    .dashboard-main { flex: 1; margin-left: 250px; padding: 2rem; background: var(--gray-50); }
+    .dashboard-header { margin-bottom: 2rem; }
+    .dashboard-header h1 { font-size: 1.8rem; color: var(--gray-900); }
+    .dashboard-header p { color: var(--gray-700); margin-top: 0.25rem; }
+    .filter-tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--gray-200); padding-bottom: 0.5rem; }
+    .filter-tab { padding: 0.5rem 1rem; border: none; background: none; cursor: pointer; font-weight: 500; color: var(--gray-700); }
+    .filter-tab.active { color: var(--primary); border-bottom: 2px solid var(--primary); margin-bottom: -0.5rem; }
+    .data-table {
+      width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow);
+    }
+    .data-table th, .data-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--gray-100); }
+    .data-table th { background: var(--gray-50); font-weight: bold; color: var(--gray-700); }
+    .badge {
+      display: inline-block; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+    }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-pending { background: #fef3c7; color: #92400e; }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.9rem; border-radius: 6px; text-decoration: none; display: inline-block; }
+    .btn-primary-sm { background: var(--primary); color: white; }
+    .btn-primary-sm:hover { background: var(--primary-dark); }
+    .btn-outline-sm { border: 1px solid var(--gray-300); color: var(--gray-700); }
+    .btn-outline-sm:hover { border-color: var(--primary); color: var(--primary); }
+    .empty-state { text-align: center; padding: 3rem; color: var(--gray-500); }
+    .empty-state i { font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem; }
+    @media (max-width: 768px) {
+      .sidebar { position: static; width: 100%; height: auto; }
+      .dashboard-main { margin-left: 0; padding: 1rem; }
+      .data-table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo"><i class="fas fa-car"></i> RYPR</div>
+      <ul class="sidebar-menu">
+        <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li><a href="vehicles.html"><i class="fas fa-car"></i> Book a Vehicle</a></li>
+        <li><a href="transactions.html" class="active"><i class="fas fa-history"></i> My Bookings</a></li>
+        <li><a href="payment.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+        <li><a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <div class="dashboard-header">
+        <h1>My Bookings & Transactions</h1>
+        <p>Track your reservations and payment history</p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All Bookings</button>
+        <button class="filter-tab" data-filter="Upcoming">Upcoming</button>
+        <button class="filter-tab" data-filter="Completed">Completed</button>
+      </div>
+
+      <!-- Transactions Table -->
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Reference No.</th>
+            <th>Vehicle</th>
+            <th>Pickup Date</th>
+            <th>Amount</th>
+            <th>Payment Method</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-body">
+          <!-- Rows will be populated by JavaScript -->
+        </tbody>
+      </table>
+
+      <!-- Empty State (hidden by default) -->
+      <div class="empty-state" id="empty-state" style="display: none;">
+        <i class="fas fa-inbox"></i>
+        <p>No bookings found. <a href="vehicles.html" style="color: var(--primary);">Reserve your first vehicle</a> today!</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ==========================================
+    // TRANSACTION DATA — Matches reference format
+    // ==========================================
+    const sampleTransactions = [
+      {
+        ref: "RYR-2026-001",
+        vehicle: "Toyota Vios",
+        pickupDate: "Oct 26, 2026",
+        amount: "₱3,000",
+        paymentMethod: "GCash",
+        status: "Completed",
+        returnDate: "Oct 28, 2026"
+      },
+      {
+        ref: "RYR-2026-002",
+        vehicle: "Toyota Fortuner",
+        pickupDate: "Nov 5, 2026",
+        amount: "₱11,400",
+        paymentMethod: "—",
+        status: "Upcoming",
+        returnDate: "Nov 7, 2026"
+      },
+      {
+        ref: "RYR-2026-003",
+        vehicle: "Toyota Hiace",
+        pickupDate: "Oct 16, 2026",
+        amount: "₱7,000",
+        paymentMethod: "Cash",
+        status: "Completed",
+        returnDate: "Oct 18, 2026"
+      },
+      {
+        ref: "RYR-2026-004",
+        vehicle: "Multicab Pick-up",
+        pickupDate: "Sep 10, 2026",
+        amount: "₱4,400",
+        paymentMethod: "PayMaya",
+        status: "Completed",
+        returnDate: "Sep 12, 2026"
+      }
+    ];
+
+    let currentFilter = 'all';
+
+    // ==========================================
+    // LOAD & MERGE TRANSACTIONS
+    // ==========================================
+    function getAllTransactions() {
+      // Get user-submitted bookings from localStorage
+      const saved = JSON.parse(localStorage.getItem('transactionRecords') || '[]');
+      // Combine sample data with user bookings (sample first, then user's new ones)
+      return [...sampleTransactions, ...saved];
+    }
+
+    // ==========================================
+    // RENDER TABLE
+    // ==========================================
+    function renderTransactions() {
+      const tbody = document.getElementById('transactions-body');
+      const emptyState = document.getElementById('empty-state');
+      let transactions = getAllTransactions();
+
+      // Apply filter
+      if (currentFilter !== 'all') {
+        transactions = transactions.filter(t => t.status === currentFilter);
+      }
+
+      tbody.innerHTML = '';
+
+      if (transactions.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      transactions.forEach(tx => {
+        const isCompleted = tx.status === 'Completed';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${tx.ref}</strong></td>
+          <td>${tx.vehicle}</td>
+          <td>${tx.pickupDate}</td>
+          <td style="font-weight: bold; color: var(--success);">${tx.amount}</td>
+          <td>${tx.paymentMethod}</td>
+          <td>
+            <span class="badge ${isCompleted ? 'badge-success' : 'badge-pending'}">
+              <i class="fas ${isCompleted ? 'fa-check-circle' : 'fa-clock'}"></i> ${tx.status}
+            </span>
+          </td>
+          <td>
+            ${isCompleted 
+              ? `<a href="#" class="btn-sm btn-outline-sm">View</a>`
+              : `<a href="payment.html?ref=${tx.ref}" class="btn-sm btn-primary-sm">Pay Now</a>`
+            }
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // ==========================================
+    // FILTER HANDLING
+    // ==========================================
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        currentFilter = this.dataset.filter;
+        renderTransactions();
+      });
+    });
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+    document.getElementById('logout-link').addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('userName');
+      window.location.href = 'index.html';
+    });
+
+    // ==========================================
+    // INITIALIZE
+    // ==========================================
+    renderTransactions();
+  </script>
+</body>
+</html>
